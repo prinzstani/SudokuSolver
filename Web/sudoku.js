@@ -67,11 +67,29 @@ class Cell {
     constructor(size, htmlElement) {
         this.options = [...Array(size).keys()].map(x => x+1);
         this.htmlElement = htmlElement;
+        this.showOptions();
     }
 
     setValue(value) {
         this.htmlElement.innerHTML = value;
         this.value = value;
         this.options = [];
+    }
+
+    removeOptions(optionsToRemove) {
+        this.options = this.options.filter(option => !optionsToRemove.includes(option));
+        this.showOptions();
+    }
+
+    showOptions() {
+        this.htmlElement.innerHTML = "";
+        const optionsContainer = document.createElement("div");
+        optionsContainer.classList = ["options"];
+        this.options.map(option => {
+            const optionDiv = document.createElement("div");
+            optionDiv.innerHTML = option;
+            optionsContainer.appendChild(optionDiv);
+        })
+        this.htmlElement.appendChild(optionsContainer);
     }
 }

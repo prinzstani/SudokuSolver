@@ -25,9 +25,17 @@ table > :nth-child(3n+1) {
 
 td {
     border: 1px solid black;
-    width: 7vmin;
-    height: 7vmin;
+    width: 9vmin;
+    height: 9vmin;
     text-align: center;
+    font-size: 7vmin;
+}
+
+.options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    font-size: 1rem;
 }
 
 body {
