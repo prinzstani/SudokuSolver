@@ -34,7 +34,7 @@ body {
     display: grid;
     grid-template-areas: 
         'sudoku control'
-        'status control';
+        'status status';
     justify-content:  center;
     align-content: center;
     grid-gap: 10px;
