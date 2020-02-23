@@ -61,7 +61,7 @@ initsudoku = function() {
 	}
 }
 
-window.addEventListener("load", () => initsudoku());
+window.addEventListener("load", initsudoku);
 
 class Cell {
     constructor(size, htmlElement) {
@@ -88,6 +88,9 @@ class Cell {
         this.options.map(option => {
             const optionDiv = document.createElement("div");
             optionDiv.innerHTML = option;
+            optionDiv.addEventListener("click", () => {
+                this.removeOptions([option]);
+            });
             optionsContainer.appendChild(optionDiv);
         })
         this.htmlElement.appendChild(optionsContainer);

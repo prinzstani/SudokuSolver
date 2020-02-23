@@ -38,6 +38,10 @@ td {
     font-size: 1rem;
 }
 
+.options * {
+    cursor: crosshair;
+}
+
 body {
     display: grid;
     grid-template-areas: 
