@@ -9,15 +9,6 @@ const examples = ["6   7 4 1"+" 7   298 "+"     65  "+"73   9  4"+"  261  78"+" 
 				  " 2   1   "+" 5 8   1 "+"   4 23  "+"4    7298"+"5       1"+" 39   4  "+"  3 45 6 "+"         "+"  8 6    ",
 				  "  2 4    "+" 5  7  3 "+"4 3  6  8"+"     95 1"+" 4  8  7 "+"1 67     "+"5  8  2 6"+" 6  3  5 "+"    2 8  "];
 
-setExample1 = function () {
-    init(9);
-    parseExample(example1, 9);
-}
-
-setExample2 = function () {
-	setExample(2);
-}
-
 setExample = function (idx) {
     init(9);
     parseExample(examples[idx], 9);
@@ -34,6 +25,12 @@ parseExample = function (example, size) {
             }
         }
     }
+	displayStatus("Let's solve example: "+ example);
+}
+
+displayStatus = function (str) {
+	const status = document.getElementById("status");
+    status.innerHTML = str;
 }
 
 init = function(size) {
