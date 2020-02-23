@@ -1,6 +1,59 @@
+html, body {
+    min-height: 100%;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+tr > :nth-child(3n) {
+    border-right: 3px solid black;
+}
+
+tr > :nth-child(3n+1) {
+    border-left: 3px solid black;
+}
+
+table > :nth-child(3n) {
+    border-bottom: 3px solid black;
+}
+
+table > :nth-child(3n+1) {
+    border-top: 3px solid black;
+}
+
+
 td {
     border: 1px solid black;
     width: 7vmin;
     height: 7vmin;
     text-align: center;
+}
+
+body {
+    display: grid;
+    grid-template-areas: 
+        'sudoku control'
+        'status control';
+    justify-content:  center;
+    align-content: center;
+    grid-gap: 10px;
+}
+
+#control {
+    grid-area: control;
+    display: flex;
+    flex-direction: column;
+}
+
+#status {
+    grid-area: status;
+}
+
+#sudoku {
+    grid-area: sudoku;
+}
+
+.lastControlItem {
+    margin-bottom: auto;
 }
