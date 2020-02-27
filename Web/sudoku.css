@@ -42,6 +42,18 @@ td {
     cursor: crosshair;
 }
 
+.done {
+    background-color: green;
+}
+
+.new {
+    background-color: yellow;
+}
+
+.hint {
+    background-color: turquoise;
+}
+
 body {
     display: grid;
     grid-template-areas: 

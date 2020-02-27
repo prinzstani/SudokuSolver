@@ -12,14 +12,17 @@ setExample = function (idx) {
     parseExample(examples[idx], 9);
 }
 
-let sudokuStructure = [];
+let sudokuRows = [];
+let sudokuColumns = [];
+let sudokuBlocks = [];
+let allCells = [];
 
 parseExample = function (example, size) {
     for(let i = 0; i<size; i++) {
         for (let j = 0; j<size; j++) {
             const character = example.charAt(i*size+j)
             if (character != ' ') {
-                sudokuStructure[i][j].setValue(character);
+                sudokuRows[i][j].setValue(parseInt(character));
             }
         }
     }
@@ -32,18 +35,35 @@ displayStatus = function (str) {
 }
 
 init = function(size) {
-    sudokuStructure = [];
-    const table = document.getElementById("sudoku");
+    sudokuRows = [];
+    sudokuColumns = [];
+    sudokuBlocks = [];
+    allCells = [];
+     const table = document.getElementById("sudoku");
     table.innerHTML = "";
+    for(let i = 0; i<size; i++) {
+        sudokuRows[i] = [];
+        sudokuColumns[i] = [];
+        sudokuBlocks[i] = [];
+    }
 
     for(let i = 0; i<size; i++) {
-        sudokuStructure[i] = [];
         const row = document.createElement("tr");
         for (let j = 0; j<size; j++) {
             const cell = document.createElement("td");
             cell.id = "cell_" + i + "_" + j;
             row.appendChild(cell);
-            sudokuStructure[i][j] = new Cell(size, cell);
+            const cellObject = new Cell(
+                size,
+                cell,
+                sudokuRows[i],
+                sudokuColumns[j],
+                sudokuBlocks[Math.floor(j/3)+3*Math.floor(i/3)]
+            )
+            sudokuRows[i][j] = cellObject;
+            sudokuColumns[j][i] = cellObject;
+            sudokuBlocks[Math.floor(j/3)+3*Math.floor(i/3)].push(cellObject);
+            allCells.push(cellObject);
         }
         table.appendChild(row);
     }
@@ -64,19 +84,34 @@ initsudoku = function() {
 window.addEventListener("load", initsudoku);
 
 class Cell {
-    constructor(size, htmlElement) {
+    constructor(size, htmlElement, row, column, block) {
         this.options = [...Array(size).keys()].map(x => x+1);
         this.htmlElement = htmlElement;
         this.showOptions();
+        this.row = row;
+        this.block = block;
+        this.column = column;
     }
 
     setValue(value) {
         this.htmlElement.innerHTML = value;
         this.value = value;
         this.options = [];
+        this.htmlElement.classList.add("done");
+        this.htmlElement.classList.add("new");
+        for (let otherCell of this.row) {
+            otherCell.removeOptions([value]);
+        }
+        for (let otherCell of this.column) {
+            otherCell.removeOptions([value]);
+        }
+        for (let otherCell of this.block) {
+            otherCell.removeOptions([value]);
+        }
     }
 
     removeOptions(optionsToRemove) {
+        if (this.value) return;
         this.options = this.options.filter(option => !optionsToRemove.includes(option));
         this.showOptions();
     }
