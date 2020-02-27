@@ -76,9 +76,13 @@ initsudoku = function() {
 	for (ex in examples) {
 		const bb = document.createElement("button");
 		bb.innerHTML = "Example " + (parseInt(ex)+1);
-		bb.setAttribute("onClick", "setExample("+ex+")");
+		bb.addEventListener("click", () => setExample(ex));
 		buttons.appendChild(bb);
-	}
+    }
+
+    document.getElementById("solveOne").addEventListener("click", solveOne);
+    document.getElementById("solveEasy").addEventListener("click", solveEasy);
+    document.getElementById("solveAll").addEventListener("click", solveAll);
 }
 
 window.addEventListener("load", initsudoku);
@@ -116,6 +120,17 @@ class Cell {
         this.showOptions();
     }
 
+    checkOne() {
+        if (this.value) return;
+        if (this.options.length === 1) {
+            const value = this.options[0];
+            this.setValue(value);
+            displayStatus("only one possibility left: " + value);
+            return true;
+        }
+        return false;
+    }
+
     showOptions() {
         this.htmlElement.innerHTML = "";
         const optionsContainer = document.createElement("div");
@@ -130,4 +145,33 @@ class Cell {
         })
         this.htmlElement.appendChild(optionsContainer);
     }
+
+    dropTempClasses() {
+        this.htmlElement.classList.remove("new");
+        this.htmlElement.classList.remove("hint");
+    }
+}
+
+function solve(stopAtDifficulty) {
+    for (const cell of allCells) {
+        cell.dropTempClasses();
+    }
+
+    for (const cell of allCells) {
+        if (cell.checkOne()) {
+            return;
+        }
+    }
+}
+
+function solveOne() {
+    solve(0);
+}
+
+function solveEasy() {
+    solve(2);
+}
+
+function solveAll() {
+    solve(100);
 }
