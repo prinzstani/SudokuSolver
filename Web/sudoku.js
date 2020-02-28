@@ -12,17 +12,19 @@ setExample = function (idx) {
     parseExample(examples[idx], 9);
 }
 
+let sudokuStructure = [];
 let sudokuRows = [];
 let sudokuColumns = [];
 let sudokuBlocks = [];
 let allCells = [];
+let allFields = [];
 
 parseExample = function (example, size) {
     for(let i = 0; i<size; i++) {
         for (let j = 0; j<size; j++) {
             const character = example.charAt(i*size+j)
             if (character != ' ') {
-                sudokuRows[i][j].setValue(parseInt(character));
+                sudokuStructure[i][j].setValue(parseInt(character));
             }
         }
     }
@@ -35,16 +37,22 @@ displayStatus = function (str) {
 }
 
 init = function(size) {
+    sudokuStructure = [];
     sudokuRows = [];
     sudokuColumns = [];
     sudokuBlocks = [];
     allCells = [];
-     const table = document.getElementById("sudoku");
+    allFields = [];
+    const table = document.getElementById("sudoku");
     table.innerHTML = "";
     for(let i = 0; i<size; i++) {
-        sudokuRows[i] = [];
-        sudokuColumns[i] = [];
-        sudokuBlocks[i] = [];
+        sudokuStructure[i] = [];
+        sudokuRows[i] = new Field();
+        sudokuColumns[i] = new Field();
+        sudokuBlocks[i] = new Field();
+        allFields.push(sudokuRows[i]);
+        allFields.push(sudokuColumns[i]);
+        allFields.push(sudokuBlocks[i]);
     }
 
     for(let i = 0; i<size; i++) {
@@ -60,9 +68,10 @@ init = function(size) {
                 sudokuColumns[j],
                 sudokuBlocks[Math.floor(j/3)+3*Math.floor(i/3)]
             )
-            sudokuRows[i][j] = cellObject;
-            sudokuColumns[j][i] = cellObject;
-            sudokuBlocks[Math.floor(j/3)+3*Math.floor(i/3)].push(cellObject);
+            sudokuStructure[i][j] = cellObject;
+            sudokuRows[i].addCell(cellObject);
+            sudokuColumns[j].addCell(cellObject);
+            sudokuBlocks[Math.floor(j/3)+3*Math.floor(i/3)].addCell(cellObject);
             allCells.push(cellObject);
         }
         table.appendChild(row);
@@ -76,7 +85,7 @@ initsudoku = function() {
 	for (ex in examples) {
 		const bb = document.createElement("button");
 		bb.innerHTML = "Example " + (parseInt(ex)+1);
-		bb.addEventListener("click", () => setExample(ex));
+		bb.setAttribute("onClick", "setExample("+ex+")");
 		buttons.appendChild(bb);
     }
 
@@ -89,12 +98,14 @@ window.addEventListener("load", initsudoku);
 
 class Cell {
     constructor(size, htmlElement, row, column, block) {
-        this.options = [...Array(size).keys()].map(x => x+1);
+        this.options = Cell.getAllAvailabeOptions(size);
         this.htmlElement = htmlElement;
         this.showOptions();
-        this.row = row;
-        this.block = block;
-        this.column = column;
+        this.fields = [row, column, block];
+    }
+
+    static getAllAvailabeOptions(size) {
+        return [...Array(size).keys()].map(x => x+1);
     }
 
     setValue(value) {
@@ -103,21 +114,17 @@ class Cell {
         this.options = [];
         this.htmlElement.classList.add("done");
         this.htmlElement.classList.add("new");
-        for (let otherCell of this.row) {
-            otherCell.removeOptions([value]);
-        }
-        for (let otherCell of this.column) {
-            otherCell.removeOptions([value]);
-        }
-        for (let otherCell of this.block) {
-            otherCell.removeOptions([value]);
-        }
+        this.fields.forEach(field => field.removeOption(value))
     }
 
-    removeOptions(optionsToRemove) {
+    removeOption(optionToRemove) {
         if (this.value) return;
-        this.options = this.options.filter(option => !optionsToRemove.includes(option));
+        this.options = this.options.filter(option => optionToRemove !== option);
         this.showOptions();
+    }
+
+    setHint() {
+        this.htmlElement.classList.add("hint");
     }
 
     checkOne() {
@@ -139,7 +146,7 @@ class Cell {
             const optionDiv = document.createElement("div");
             optionDiv.innerHTML = option;
             optionDiv.addEventListener("click", () => {
-                this.removeOptions([option]);
+                this.removeOption([option]);
             });
             optionsContainer.appendChild(optionDiv);
         })
@@ -152,26 +159,93 @@ class Cell {
     }
 }
 
-function solve(stopAtDifficulty) {
+class Field {
+    constructor () {
+        this.cells = [];
+    }
+
+    addCell(cell) {
+        this.cells.push(cell);
+    }
+
+    removeOption(option) {
+        this.cells.forEach(cell => cell.removeOption(option))
+    }
+
+    checkLonelyNumbers() {
+        console.log(this.cells.length)
+        for (const option of Cell.getAllAvailabeOptions(this.size)) {
+            let count = 0;
+            let theCell;
+            for (const cell of this.cells) {
+                if (cell.options.includes(option)) {
+                    theCell=cell;
+                    count++;
+                }
+            }
+            if (count == 1 && ! theCell.value) {
+                displayStatus("only one cell possible for " + option);
+                for (const cell of this.cells) cell.setHint();
+                theCell.setValue(option);
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+function solve(stopAtDifficulty, keepGoing) {
     for (const cell of allCells) {
         cell.dropTempClasses();
     }
 
-    for (const cell of allCells) {
-        if (cell.checkOne()) {
-            return;
+    foundSomething = false;
+    difficultyReached = 0;
+
+    // break out of this code block if we've found something
+    // or further attempts are too hard
+    solveAttempts : {
+        difficultyReached = 1;
+        for (const cell of allCells) {
+            if (cell.checkOne()) {
+                foundSomething = true;
+                break solveAttempts;
+            }
         }
+
+        difficultyReached = 2;
+        console.log(allFields.length);
+        for (const field of allFields) {
+            if (field.checkLonelyNumbers()) {
+                foundSomething = true;
+                break solveAttempts;
+            }
+        }
+
+        difficultyReached = 3;
+
+        // more solve attempts to be translated from previous version
     }
+
+    if (foundSomething 
+        && keepGoing
+        && stopAtDifficulty > difficultyReached) {
+        setTimeout(
+            () => solve(stopAtDifficulty, keepGoing),
+            100
+        );
+    }
+
 }
 
 function solveOne() {
-    solve(0);
+    solve(100, false);
 }
 
 function solveEasy() {
-    solve(2);
+    solve(2, true);
 }
 
 function solveAll() {
-    solve(100);
+    solve(100, true);
 }

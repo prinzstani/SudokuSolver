@@ -43,15 +43,15 @@ td {
 }
 
 .done {
-    background-color: green;
-}
-
-.new {
-    background-color: yellow;
+    background-color: lightgreen;
 }
 
 .hint {
     background-color: turquoise;
+}
+
+.new {
+    background-color: yellow;
 }
 
 body {
