@@ -48,9 +48,9 @@ init = function(size) {
     table.innerHTML = "";
     for(let i = 0; i<size; i++) {
         sudokuStructure[i] = [];
-        sudokuRows[i] = new Field(size, "row"+i);
-        sudokuColumns[i] = new Field(size, "column"+i);
-        sudokuBlocks[i] = new Field(size, "block"+i);
+        sudokuRows[i] = new Field(size, "row"+(i+1));
+        sudokuColumns[i] = new Field(size, "column"+(i+1));
+        sudokuBlocks[i] = new Field(size, "block"+(i+1));
         allFields.push(sudokuRows[i]);
         allFields.push(sudokuColumns[i]);
         allFields.push(sudokuBlocks[i]);
@@ -219,7 +219,7 @@ class Field {
 
     checkBetween(otherField) {
         if (this.done) return false;
-        if (otherField == this) return false;
+        if (otherField === this) return false;
         var jointCells = [];
         var mySelectedCells = [];
         var otherSelectedCells = [];
@@ -231,26 +231,26 @@ class Field {
         for (const option of Cell.getAllAvailabeOptions(this.size)) {
             mySelectedCells = [];
             for (const cell of this.cells) {
-                if (cell.opions.includes(option)) mySelectedCells.push(cell);
+                if (cell.options.includes(option)) mySelectedCells.push(cell);
             }
-            if (mySelectedCells.length == 1) continue;
+            if (mySelectedCells.length === 0) continue;
             otherSelectedCells = [];
             for (const cell of otherField.cells) {
-                if (cell.opions.includes(option)) otherSelectedCells.push(cell);
+                if (cell.options.includes(option)) otherSelectedCells.push(cell);
             }
-            if (otherSelectedCells.length == 1) continue;
+            if (otherSelectedCells.length === 0) continue;
             jointSelectedCells = [];
             for (const cell of jointCells) {
-                if (cell.opions.includes(option)) jointSelectedCells.push(cell);
+                if (cell.options.includes(option)) jointSelectedCells.push(cell);
             }
-            if (otherSelectedCells.length == jointSelectedCells.length) {
-                if (mySelectedCells.length == jointSelectedCells.length) continue;
+            if (otherSelectedCells.length === jointSelectedCells.length) {
+                if (mySelectedCells.length === jointSelectedCells.length) continue;
                 for (const cell of otherField.cells) {cell.setHint();}
                 for (const cell of this.cells) {
                     cell.setHint();
-                    if ((jointCells.includes(cell)) && (cell.includes(option))) {
+                    if ((!jointCells.includes(cell)) && (cell.options.includes(option))) {
                         cell.removeOption(option);
-                        c.setNew();
+                        cell.setNew();
                     }
                 }
                 displayStatus("removing " + option + " outside the joint part of " + this.name + " and " + otherField.name);
@@ -290,7 +290,6 @@ function solve(stopAtDifficulty, keepGoing) {
         }
 
         difficultyReached = 3;
-
         for (const field1 of allFields) {
             for (const field2 of allFields) {
                 if (field1.checkBetween(field2)) {
@@ -301,6 +300,7 @@ function solve(stopAtDifficulty, keepGoing) {
         }
 
         difficultyReached = 4;
+
         // more solve attempts to be translated from previous version
     }
 
@@ -320,7 +320,7 @@ function solveOne() {
 }
 
 function solveEasy() {
-    solve(2, true);
+    solve(3, true);
 }
 
 function solveAll() {
