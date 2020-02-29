@@ -48,9 +48,9 @@ init = function(size) {
     table.innerHTML = "";
     for(let i = 0; i<size; i++) {
         sudokuStructure[i] = [];
-        sudokuRows[i] = new Field();
-        sudokuColumns[i] = new Field();
-        sudokuBlocks[i] = new Field();
+        sudokuRows[i] = new Field(size, "row"+i);
+        sudokuColumns[i] = new Field(size, "column"+i);
+        sudokuBlocks[i] = new Field(size, "block"+i);
         allFields.push(sudokuRows[i]);
         allFields.push(sudokuColumns[i]);
         allFields.push(sudokuBlocks[i]);
@@ -137,7 +137,6 @@ class Cell {
     }
 
     removeOption(optionToRemove) {
-		if (optionToRemove==1) console.log("removing option " + optionToRemove + " from " + this.options);
         if (this.value) return;
         this.options = this.options.filter(option => optionToRemove !== option);
         this.showOptions();
@@ -145,6 +144,10 @@ class Cell {
 
     setHint() {
         this.htmlElement.classList.add("hint");
+    }
+
+    setNew() {
+        this.htmlElement.classList.add("new");
     }
 
     checkOne() {
@@ -180,8 +183,10 @@ class Cell {
 }
 
 class Field {
-    constructor () {
+    constructor (size, name) {
         this.cells = [];
+        this.name = name;
+        this.size = size;
     }
 
     addCell(cell) {
@@ -193,7 +198,6 @@ class Field {
     }
 
     checkLonelyNumbers() {
-        console.log(this.cells.length)
         for (const option of Cell.getAllAvailabeOptions(this.size)) {
             let count = 0;
             let theCell;
@@ -203,7 +207,7 @@ class Field {
                     count++;
                 }
             }
-            if (count == 1 && ! theCell.value) {
+            if (count === 1 && !theCell.value) {
                 displayStatus("only one cell possible for " + option);
                 for (const cell of this.cells) cell.setHint();
                 theCell.setValue(option);
@@ -212,6 +216,50 @@ class Field {
         }
         return false;
     }
+
+    checkBetween(otherField) {
+        if (this.done) return false;
+        if (otherField == this) return false;
+        var jointCells = [];
+        var mySelectedCells = [];
+        var otherSelectedCells = [];
+        var jointSelectedCells = [];
+        for (const cell of otherField.cells) {
+            if (this.cells.includes(cell)) jointCells.push(cell);
+        }
+        if (jointCells.length<2) return false;
+        for (const option of Cell.getAllAvailabeOptions(this.size)) {
+            mySelectedCells = [];
+            for (const cell of this.cells) {
+                if (cell.opions.includes(option)) mySelectedCells.push(cell);
+            }
+            if (mySelectedCells.length == 1) continue;
+            otherSelectedCells = [];
+            for (const cell of otherField.cells) {
+                if (cell.opions.includes(option)) otherSelectedCells.push(cell);
+            }
+            if (otherSelectedCells.length == 1) continue;
+            jointSelectedCells = [];
+            for (const cell of jointCells) {
+                if (cell.opions.includes(option)) jointSelectedCells.push(cell);
+            }
+            if (otherSelectedCells.length == jointSelectedCells.length) {
+                if (mySelectedCells.length == jointSelectedCells.length) continue;
+                for (const cell of otherField.cells) {cell.setHint();}
+                for (const cell of this.cells) {
+                    cell.setHint();
+                    if ((jointCells.includes(cell)) && (cell.includes(option))) {
+                        cell.removeOption(option);
+                        c.setNew();
+                    }
+                }
+                displayStatus("removing " + option + " outside the joint part of " + this.name + " and " + otherField.name);
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
 
 function solve(stopAtDifficulty, keepGoing) {
@@ -234,7 +282,6 @@ function solve(stopAtDifficulty, keepGoing) {
         }
 
         difficultyReached = 2;
-        console.log(allFields.length);
         for (const field of allFields) {
             if (field.checkLonelyNumbers()) {
                 foundSomething = true;
@@ -244,6 +291,16 @@ function solve(stopAtDifficulty, keepGoing) {
 
         difficultyReached = 3;
 
+        for (const field1 of allFields) {
+            for (const field2 of allFields) {
+                if (field1.checkBetween(field2)) {
+                    foundSomething = true;
+                    break solveAttempts;
+                }
+            }
+        }
+
+        difficultyReached = 4;
         // more solve attempts to be translated from previous version
     }
 
