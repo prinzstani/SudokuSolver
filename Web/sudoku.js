@@ -1,3 +1,4 @@
+// sudoku solver - most possible human
 
 const examples = ["6   7 4 1"+" 7   298 "+"     65  "+"73   9  4"+"  261  78"+"    8    "+" 4 96 7 3"+" 8  53 42"+" 5    8  ",
 				  "    3   4"+"16 57 2  "+" 3   1  8"+"  9      "+"78 3 4 95"+"      1  "+"9  6   4 "+"  3 59 27"+"8   1    ",
@@ -24,7 +25,7 @@ parseExample = function (example, size) {
         for (let j = 0; j<size; j++) {
             const character = example.charAt(i*size+j)
             if (character != ' ') {
-                sudokuStructure[i][j].setValue(parseInt(character));
+                sudokuStructure[i][j].setValue(parseInt(character), true);
             }
         }
     }
@@ -92,6 +93,8 @@ initsudoku = function() {
     document.getElementById("solveOne").addEventListener("click", solveOne);
     document.getElementById("solveEasy").addEventListener("click", solveEasy);
     document.getElementById("solveAll").addEventListener("click", solveAll);
+    document.getElementById("reset").addEventListener("click", restart);
+    document.getElementById("clean").setAttribute("onClick", "init(9)");
 }
 
 window.addEventListener("load", initsudoku);
@@ -108,16 +111,33 @@ class Cell {
         return [...Array(size).keys()].map(x => x+1);
     }
 
-    setValue(value) {
+    setValue(value, initial=false) {
         this.htmlElement.innerHTML = value;
         this.value = value;
         this.options = [];
+		this.initial = initial;
         this.htmlElement.classList.add("done");
         this.htmlElement.classList.add("new");
         this.fields.forEach(field => field.removeOption(value))
     }
 
+    resetOptions(size) {
+        if (!this.initial) {
+			this.options = Cell.getAllAvailabeOptions(size);
+			this.htmlElement.classList.remove("done");
+			this.value = null;
+			this.showOptions();
+        }
+    }
+
+    resetValue() {
+        if (this.initial) {
+			this.setValue(this.value,true);
+		}
+    }
+
     removeOption(optionToRemove) {
+		if (optionToRemove==1) console.log("removing option " + optionToRemove + " from " + this.options);
         if (this.value) return;
         this.options = this.options.filter(option => optionToRemove !== option);
         this.showOptions();
@@ -128,7 +148,7 @@ class Cell {
     }
 
     checkOne() {
-        if (this.value) return;
+        if (this.value) return false;
         if (this.options.length === 1) {
             const value = this.options[0];
             this.setValue(value);
@@ -146,7 +166,7 @@ class Cell {
             const optionDiv = document.createElement("div");
             optionDiv.innerHTML = option;
             optionDiv.addEventListener("click", () => {
-                this.removeOption([option]);
+                this.removeOption(option);
             });
             optionsContainer.appendChild(optionDiv);
         })
@@ -248,4 +268,15 @@ function solveEasy() {
 
 function solveAll() {
     solve(100, true);
+}
+
+function restart() {
+    displayStatus("restart not implemented yet");
+    for (const cell of allCells) {
+        cell.dropTempClasses();
+        cell.resetOptions(9);
+    }
+    for (const cell of allCells) {
+        cell.resetValue();
+    }
 }
