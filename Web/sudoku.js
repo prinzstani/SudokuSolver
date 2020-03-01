@@ -268,6 +268,52 @@ class Field {
         return false;
     }
 
+    checkGroups() {
+        if (this.done) return false;
+        const unfinishedCells = [];
+        for (const cell of this.cells) if (!cell.value) unfinishedCells.push(cell);
+        if (unfinishedCells.length<2) return false;
+        return this.collectGroups(unfinishedCells,[],0,1);
+    }
+
+    collectGroups(cellsToCheck, options, idx, depth) {
+        for(let i = idx; i<cellsToCheck.length; i++) {
+            var newOptions = [...options];
+            for (const option of cellsToCheck[idx].options) {
+                if (!newOptions.includes(option)) newOptions.push(option);
+            }
+            if (newOptions.length > cellsToCheck.length-2) return false; // too many alternatives collected
+            if (newOptions.length === depth) {
+                displayStatus("Delete " + newOptions + " outside the group.");
+                cellsToCheck[idx].setHint();
+                // highlight and change outside elements
+                var haveChanges=false;
+                for (const cell of cellsToCheck) {
+                    var cellHasOptionsToRemove = false;
+                    for (const option2 of cell.options) {
+                        if (!newOptions.includes(option2)) {
+                            cellHasOptionsToRemove = true;
+                        }
+                    }
+                    if (cellHasOptionsToRemove) {
+                        for (const option2 of cell.options) {
+                            if (newOptions.includes(option2)) {
+                                cell.removeOption(option2);
+                            }
+                        }
+                        haveChanges = true;
+                        cell.setNew();
+                    }
+                }
+                return haveChanges;
+            }
+            if (this.collectGroups(cellsToCheck,newOptions,i+1,depth+1)) {
+                cellsToCheck[idx].setHint();
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 function solve(stopAtDifficulty, keepGoing) {
@@ -320,7 +366,14 @@ function solve(stopAtDifficulty, keepGoing) {
 
         difficultyReached = 4;
 
-        // more solve attempts to be translated from previous version
+        for (const field of allFields) {
+            if (field.checkGroups()) {
+                foundSomething = true;
+                break solveAttempts;
+            }
+        }
+
+        difficultyReached = 5;
     }
 
     if (foundSomething 
