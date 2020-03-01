@@ -155,7 +155,7 @@ class Cell {
         if (this.options.length === 1) {
             const value = this.options[0];
             this.setValue(value);
-            displayStatus("only one possibility left: " + value);
+            displayStatus("Only one possibility left: " + value + ".");
             return true;
         }
         return false;
@@ -197,6 +197,14 @@ class Field {
         this.cells.forEach(cell => cell.removeOption(option))
     }
 
+    checkDone() {
+        if (this.done) return;
+        this.done = true;
+        for (const cell of this.cells) {
+            if (!cell.value) this.done = false;
+        }
+    }
+
     checkLonelyNumbers() {
         for (const option of Cell.getAllAvailabeOptions(this.size)) {
             let count = 0;
@@ -208,7 +216,7 @@ class Field {
                 }
             }
             if (count === 1 && !theCell.value) {
-                displayStatus("only one cell possible for " + option);
+                displayStatus("Only one cell possible for " + option + ".");
                 for (const cell of this.cells) cell.setHint();
                 theCell.setValue(option);
                 return true;
@@ -253,7 +261,7 @@ class Field {
                         cell.setNew();
                     }
                 }
-                displayStatus("removing " + option + " outside the joint part of " + this.name + " and " + otherField.name);
+                displayStatus("Removing " + option + " outside the joint part of " + this.name + " and " + otherField.name + ".");
                 return true;
             }
         }
@@ -263,8 +271,19 @@ class Field {
 }
 
 function solve(stopAtDifficulty, keepGoing) {
+    let done = true;
     for (const cell of allCells) {
         cell.dropTempClasses();
+        if (!cell.value) done = false;
+    }
+
+    if (done) {
+        victory();
+        return;
+    }
+
+    for (const field of allFields) {
+        field.checkDone();
     }
 
     foundSomething = false;
@@ -327,8 +346,11 @@ function solveAll() {
     solve(100, true);
 }
 
+function victory() {
+    displayStatus("I did it!")
+}
+
 function restart() {
-    displayStatus("restart not implemented yet");
     for (const cell of allCells) {
         cell.dropTempClasses();
         cell.resetOptions(9);
