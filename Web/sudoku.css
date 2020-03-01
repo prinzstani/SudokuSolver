@@ -46,6 +46,10 @@ td {
     background-color: lightgreen;
 }
 
+.initial {
+    background-color: green;
+}
+
 .hint {
     background-color: turquoise;
 }
@@ -68,7 +72,7 @@ body {
     grid-area: click;
     display: flex;
     flex-direction: column;
-    width: 5em;
+    width: 9em;
     justify-content:  center;
     align-content: center;
 }

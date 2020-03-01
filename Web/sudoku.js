@@ -40,8 +40,20 @@ displayStatus = function (str) {
 let selectOptionOnClick = true;
 
 updateOptionClickResult = function() {
-    selectedRadioButton = document.querySelector('input[name="clickResult"]:checked');
+    const selectedRadioButton = document.querySelector('input[name="clickResult"]:checked');
     selectOptionOnClick = selectedRadioButton.value === "true";
+}
+
+let selectAsInitial = false;
+
+updateSelectAsInitial = function() {
+    const checkBox = document.getElementById("setAsInitial");
+    selectAsInitial = checkBox.checked;
+}
+
+updateOptions = function() {
+    updateOptionClickResult();
+    updateSelectAsInitial();
 }
 
 init = function(size) {
@@ -102,7 +114,7 @@ initsudoku = function() {
     document.getElementById("solveAll").addEventListener("click", solveAll);
     document.getElementById("reset").addEventListener("click", restart);
     document.getElementById("clean").setAttribute("onClick", "init(9)");
-    document.getElementById("click").addEventListener("click", updateOptionClickResult);
+    document.getElementById("click").addEventListener("click", updateOptions);
 }
 
 window.addEventListener("load", initsudoku);
@@ -126,6 +138,7 @@ class Cell {
 		this.initial = initial;
         this.htmlElement.classList.add("done");
         this.htmlElement.classList.add("new");
+        if (initial) this.htmlElement.classList.add("initial");
         this.fields.forEach(field => field.removeOption(value))
     }
 
@@ -145,7 +158,9 @@ class Cell {
     }
 
     optionClicked(option) {
-        selectOptionOnClick ? this.setValue(option) : this.removeOption(option);
+        selectOptionOnClick
+            ? this.setValue(option, selectAsInitial)
+            : this.removeOption(option);
     }
 
     removeOption(optionToRemove) {
