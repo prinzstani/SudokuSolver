@@ -290,33 +290,36 @@ class Field {
 
     collectGroups(cellsToCheck, options, idx, depth) {
         for(let i = idx; i<cellsToCheck.length; i++) {
-            var newOptions = [...options];
+            const newOptions = [...options];
             for (const option of cellsToCheck[idx].options) {
                 if (!newOptions.includes(option)) newOptions.push(option);
             }
             if (newOptions.length > cellsToCheck.length-2) return false; // too many alternatives collected
             if (newOptions.length === depth) {
                 displayStatus("Delete " + newOptions + " outside the group.");
-                cellsToCheck[idx].setHint();
                 // highlight and change outside elements
                 var haveChanges=false;
                 for (const cell of cellsToCheck) {
-                    var cellHasOptionsToRemove = false;
-                    for (const option2 of cell.options) {
-                        if (!newOptions.includes(option2)) {
-                            cellHasOptionsToRemove = true;
+                    let cellHasOptionsInGroup = false;
+                    let cellHasOptionsOutsideGroup = false;
+                    for (const option of cell.options) {
+                        if (newOptions.includes(option)) {
+                            cellHasOptionsInGroup = true;
+                        } else {
+                            cellHasOptionsOutsideGroup = true;
                         }
                     }
-                    if (cellHasOptionsToRemove) {
-                        for (const option2 of cell.options) {
-                            if (newOptions.includes(option2)) {
-                                cell.removeOption(option2);
+                    if (cellHasOptionsInGroup && cellHasOptionsOutsideGroup) {
+                        for (const option of cell.options) {
+                            if (newOptions.includes(option)) {
+                                cell.removeOption(option);
                             }
                         }
                         haveChanges = true;
                         cell.setNew();
                     }
                 }
+                if (haveChanges) cellsToCheck[idx].setHint();
                 return haveChanges;
             }
             if (this.collectGroups(cellsToCheck,newOptions,i+1,depth+1)) {
