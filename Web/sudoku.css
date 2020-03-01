@@ -57,11 +57,28 @@ td {
 body {
     display: grid;
     grid-template-areas: 
-        'sudoku control'
-        'status status';
+        'click sudoku control'
+        '.     status .';
     justify-content:  center;
     align-content: center;
     grid-gap: 10px;
+}
+
+#click {
+    grid-area: click;
+    display: flex;
+    flex-direction: column;
+    width: 5em;
+    justify-content:  center;
+    align-content: center;
+}
+
+.clickContainer {
+    display: flex;
+    justify-content:  center;
+    align-content: center;
+    align-items: center;
+    margin: 1em;
 }
 
 #control {

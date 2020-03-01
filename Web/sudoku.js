@@ -37,6 +37,13 @@ displayStatus = function (str) {
     status.innerHTML = str;
 }
 
+let selectOptionOnClick = true;
+
+updateOptionClickResult = function() {
+    selectedRadioButton = document.querySelector('input[name="clickResult"]:checked');
+    selectOptionOnClick = selectedRadioButton.value === "true";
+}
+
 init = function(size) {
     sudokuStructure = [];
     sudokuRows = [];
@@ -95,6 +102,7 @@ initsudoku = function() {
     document.getElementById("solveAll").addEventListener("click", solveAll);
     document.getElementById("reset").addEventListener("click", restart);
     document.getElementById("clean").setAttribute("onClick", "init(9)");
+    document.getElementById("click").addEventListener("click", updateOptionClickResult);
 }
 
 window.addEventListener("load", initsudoku);
@@ -136,6 +144,10 @@ class Cell {
 		}
     }
 
+    optionClicked(option) {
+        selectOptionOnClick ? this.setValue(option) : this.removeOption(option);
+    }
+
     removeOption(optionToRemove) {
         if (this.value) return;
         this.options = this.options.filter(option => optionToRemove !== option);
@@ -169,7 +181,7 @@ class Cell {
             const optionDiv = document.createElement("div");
             optionDiv.innerHTML = option;
             optionDiv.addEventListener("click", () => {
-                this.removeOption(option);
+                this.optionClicked(option);
             });
             optionsContainer.appendChild(optionDiv);
         })

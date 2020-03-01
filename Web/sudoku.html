@@ -6,6 +6,16 @@
     </head>
     <body>
         <script src="sudoku.js"></script>
+        <div id="click">
+            <div class="clickContainer">
+                <input type="radio" name="clickResult" id="selectOption" value="true" checked>
+                <label for="selectOption">On click select option.</label>
+            </div>
+            <div class="clickContainer">
+                <input type="radio" name="clickResult" value="false" id="removeOption">
+                <label for="removeOption">On click remove option</label>
+            </div>
+        </div>
         <table id="sudoku">
         </table>
         <div id="status">I am a status</div>
