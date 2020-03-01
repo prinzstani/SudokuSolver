@@ -55,8 +55,6 @@ let solveAllWhenSelecting;
 
 updateSolveAllWhenSelecting = function() {
     const checkBox = document.getElementById("solveWhenSelecting");
-    console.log(checkBox);
-    console.log(checkBox.checked);
     solveAllWhenSelecting = checkBox.checked;
 }
 
@@ -175,7 +173,6 @@ class Cell {
     }
 
     selectOption(option) {
-        console.log(solveAllWhenSelecting);
         this.setValue(option, selectAsInitial);
         if (solveAllWhenSelecting) solveAll();
     }
