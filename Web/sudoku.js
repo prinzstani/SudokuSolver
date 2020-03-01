@@ -37,23 +37,33 @@ displayStatus = function (str) {
     status.innerHTML = str;
 }
 
-let selectOptionOnClick = true;
+let selectOptionOnClick;
 
 updateOptionClickResult = function() {
     const selectedRadioButton = document.querySelector('input[name="clickResult"]:checked');
     selectOptionOnClick = selectedRadioButton.value === "true";
 }
 
-let selectAsInitial = false;
+let selectAsInitial;
 
 updateSelectAsInitial = function() {
     const checkBox = document.getElementById("setAsInitial");
     selectAsInitial = checkBox.checked;
 }
 
+let solveAllWhenSelecting;
+
+updateSolveAllWhenSelecting = function() {
+    const checkBox = document.getElementById("solveWhenSelecting");
+    console.log(checkBox);
+    console.log(checkBox.checked);
+    solveAllWhenSelecting = checkBox.checked;
+}
+
 updateOptions = function() {
     updateOptionClickResult();
     updateSelectAsInitial();
+    updateSolveAllWhenSelecting();
 }
 
 init = function(size) {
@@ -99,6 +109,7 @@ init = function(size) {
 }
 
 initsudoku = function() {
+    updateOptions();
     const buttons = document.getElementById("control");
 
 	init(9);
@@ -159,8 +170,14 @@ class Cell {
 
     optionClicked(option) {
         selectOptionOnClick
-            ? this.setValue(option, selectAsInitial)
+            ? this.selectOption(option)
             : this.removeOption(option);
+    }
+
+    selectOption(option) {
+        console.log(solveAllWhenSelecting);
+        this.setValue(option, selectAsInitial);
+        if (solveAllWhenSelecting) solveAll();
     }
 
     removeOption(optionToRemove) {
