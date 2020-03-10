@@ -37,7 +37,7 @@ Example: Consider a field with the following cell options: (12) (23) (13) (34) (
 
 # Bugs and suggestions
 
-Any bug or suggestion should be **created as an issue** [in the repository](https://github.com/prinzstani/SudokuSolver/issues) for easier tracking. This allows to follow the status of the issue.
+Any bug or suggestion should be [**created as an issue**](https://github.com/prinzstani/SudokuSolver/issues) for easier tracking. This allows to follow the status of the issue.
 
 All suggestions are welcome, even the smallest ones.
 
