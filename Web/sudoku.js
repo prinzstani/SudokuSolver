@@ -342,12 +342,11 @@ class Field {
     collectGroups(cellsToCheck, options, idx, depth) {
         for(let i = idx; i<cellsToCheck.length; i++) {
             const newOptions = [...options];
-            for (const option of cellsToCheck[idx].options) {
+            for (const option of cellsToCheck[i].options) {
                 if (!newOptions.includes(option)) newOptions.push(option);
             }
             if (newOptions.length > cellsToCheck.length-2) return false; // too many alternatives collected
             if (newOptions.length === depth) {
-                displayStatus("Delete " + newOptions + " outside the group.");
                 // highlight and change outside elements
                 var haveChanges=false;
                 for (const cell of cellsToCheck) {
@@ -370,11 +369,14 @@ class Field {
                         cell.setNew();
                     }
                 }
-                if (haveChanges) cellsToCheck[idx].setHint();
+                if (haveChanges) {
+                    cellsToCheck[i].setHint();
+                    displayStatus("Delete " + newOptions + " outside the group.");
+                }
                 return haveChanges;
             }
             if (this.collectGroups(cellsToCheck,newOptions,i+1,depth+1)) {
-                cellsToCheck[idx].setHint();
+                cellsToCheck[i].setHint();
                 return true;
             }
         }
