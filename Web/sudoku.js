@@ -109,6 +109,7 @@ init = function(size = gridSize) {
         }
         table.appendChild(row);
     }
+    displayStatus("Created fresh and clean board")
 }
 
 initsudoku = function() {
@@ -462,4 +463,5 @@ function restart() {
     for (const cell of allCells) {
         cell.resetValue();
     }
+    displayStatus("Board has been reset.")
 }
