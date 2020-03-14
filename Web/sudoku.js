@@ -69,9 +69,13 @@ init = function(size = gridSize) {
     gridSize = size;
     let xPeriod = Math.sqrt(size);
     let yPeriod = Math.sqrt(size);
-    if (size === 12) {
+    if (size === 6) {
         xPeriod = 3;
-        yPeriod = 4;
+        yPeriod = 2;
+    }
+    if (size === 12) {
+        xPeriod = 4;
+        yPeriod = 3;
     }
    sudokuStructure = [];
     sudokuRows = [];
@@ -103,12 +107,12 @@ init = function(size = gridSize) {
                 cell,
                 sudokuRows[i],
                 sudokuColumns[j],
-                sudokuBlocks[Math.floor(j/yPeriod)+xPeriod*Math.floor(i/xPeriod)]
+                sudokuBlocks[Math.floor(j/xPeriod)+yPeriod*Math.floor(i/yPeriod)]
             )
             sudokuStructure[i][j] = cellObject;
             sudokuRows[i].addCell(cellObject);
             sudokuColumns[j].addCell(cellObject);
-            sudokuBlocks[Math.floor(j/yPeriod)+xPeriod*Math.floor(i/xPeriod)]
+            sudokuBlocks[Math.floor(j/xPeriod)+yPeriod*Math.floor(i/yPeriod)]
                 .addCell(cellObject);
             allCells.push(cellObject);
         }
@@ -136,6 +140,7 @@ initsudoku = function() {
     document.getElementById("clean").setAttribute("onClick", "init()");
     document.getElementById("click").addEventListener("click", updateOptions);
     document.getElementById("4x4").setAttribute("onClick", "init(4)");
+    document.getElementById("6x6").setAttribute("onClick", "init(6)");
     document.getElementById("9x9").setAttribute("onClick", "init(9)");
     document.getElementById("12x12").setAttribute("onClick", "init(12)");
     document.getElementById("16x16").setAttribute("onClick", "init(16)");
