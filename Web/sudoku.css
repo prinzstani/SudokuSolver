@@ -38,6 +38,38 @@ table[data-size="4"] > :nth-child(2n+1) {
     border-top: 3px solid black;
 }
 
+[data-size="12"] tr > :nth-child(4n) {
+    border-right: 3px solid black;
+}
+
+[data-size="12"] tr > :nth-child(4n+1) {
+    border-left: 3px solid black;
+}
+
+table[data-size="12"] > :nth-child(3n) {
+    border-bottom: 3px solid black;
+}
+
+table[data-size="12"] > :nth-child(3n+1) {
+    border-top: 3px solid black;
+}
+[data-size="16"] tr > :nth-child(4n) {
+    border-right: 3px solid black;
+}
+
+[data-size="16"] tr > :nth-child(4n+1) {
+    border-left: 3px solid black;
+}
+
+table[data-size="16"] > :nth-child(4n) {
+    border-bottom: 3px solid black;
+}
+
+table[data-size="16"] > :nth-child(4n+1) {
+    border-top: 3px solid black;
+}
+
+
 td {
     border: 1px solid black;
     width: 9vmin;
@@ -59,6 +91,16 @@ td {
 [data-size="4"] .options {
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, 1fr);
+}
+
+[data-size="12"] .options {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+}
+
+[data-size="16"] .options {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
 }
 
 .options * {
