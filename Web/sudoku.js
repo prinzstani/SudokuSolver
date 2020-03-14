@@ -269,6 +269,7 @@ class Field {
     }
 
     checkLonelyNumbers() {
+        if (this.done) return;
         for (const option of Cell.getAllAvailabeOptions(this.size)) {
             let count = 0;
             let theCell;
@@ -478,6 +479,9 @@ function restart() {
     }
     for (const cell of allCells) {
         cell.resetValue();
+    }
+    for (const field of allFields) {
+        field.done = false;
     }
     displayStatus("Board has been reset.")
 }
