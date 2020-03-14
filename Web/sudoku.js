@@ -14,6 +14,7 @@ setExample = function (idx) {
 }
 
 let sudokuStructure = [];
+let gridSize = 9;
 let sudokuRows = [];
 let sudokuColumns = [];
 let sudokuBlocks = [];
@@ -64,7 +65,9 @@ updateOptions = function() {
     updateSolveAllWhenSelecting();
 }
 
-init = function(size) {
+init = function(size = gridSize) {
+    gridSize = size;
+    const period = Math.sqrt(size);
     sudokuStructure = [];
     sudokuRows = [];
     sudokuColumns = [];
@@ -72,6 +75,7 @@ init = function(size) {
     allCells = [];
     allFields = [];
     const table = document.getElementById("sudoku");
+    table.setAttribute("data-size", size);
     table.innerHTML = "";
     for(let i = 0; i<size; i++) {
         sudokuStructure[i] = [];
@@ -94,12 +98,13 @@ init = function(size) {
                 cell,
                 sudokuRows[i],
                 sudokuColumns[j],
-                sudokuBlocks[Math.floor(j/3)+3*Math.floor(i/3)]
+                sudokuBlocks[Math.floor(j/period)+period*Math.floor(i/period)]
             )
             sudokuStructure[i][j] = cellObject;
             sudokuRows[i].addCell(cellObject);
             sudokuColumns[j].addCell(cellObject);
-            sudokuBlocks[Math.floor(j/3)+3*Math.floor(i/3)].addCell(cellObject);
+            sudokuBlocks[Math.floor(j/period)+period*Math.floor(i/period)]
+                .addCell(cellObject);
             allCells.push(cellObject);
         }
         table.appendChild(row);
@@ -122,8 +127,10 @@ initsudoku = function() {
     document.getElementById("solveEasy").addEventListener("click", solveEasy);
     document.getElementById("solveAll").addEventListener("click", solveAll);
     document.getElementById("reset").addEventListener("click", restart);
-    document.getElementById("clean").setAttribute("onClick", "init(9)");
+    document.getElementById("clean").setAttribute("onClick", "init()");
     document.getElementById("click").addEventListener("click", updateOptions);
+    document.getElementById("4x4").setAttribute("onClick", "init(4)");
+    document.getElementById("9x9").setAttribute("onClick", "init(9)");
 }
 
 window.addEventListener("load", initsudoku);
@@ -450,7 +457,7 @@ function victory() {
 function restart() {
     for (const cell of allCells) {
         cell.dropTempClasses();
-        cell.resetOptions(9);
+        cell.resetOptions(gridSize);
     }
     for (const cell of allCells) {
         cell.resetValue();
