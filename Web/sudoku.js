@@ -345,7 +345,7 @@ class Field {
             for (const option of cellsToCheck[i].options) {
                 if (!newOptions.includes(option)) newOptions.push(option);
             }
-            if (newOptions.length > cellsToCheck.length-2) return false; // too many alternatives collected
+            if (newOptions.length > cellsToCheck.length-2) continue; // too many alternatives collected
             if (newOptions.length === depth) {
                 // highlight and change outside elements
                 var haveChanges=false;
