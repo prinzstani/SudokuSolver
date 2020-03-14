@@ -15,6 +15,7 @@ setExample = function (idx) {
 }
 
 let sudokuStructure = [];
+let gridSize = 9;
 let sudokuRows = [];
 let sudokuColumns = [];
 let sudokuBlocks = [];
@@ -65,14 +66,26 @@ updateOptions = function() {
     updateSolveAllWhenSelecting();
 }
 
-init = function(size) {
-    sudokuStructure = [];
+init = function(size = gridSize) {
+    gridSize = size;
+    let xPeriod = Math.sqrt(size);
+    let yPeriod = Math.sqrt(size);
+    if (size === 6) {
+        xPeriod = 3;
+        yPeriod = 2;
+    }
+    if (size === 12) {
+        xPeriod = 4;
+        yPeriod = 3;
+    }
+   sudokuStructure = [];
     sudokuRows = [];
     sudokuColumns = [];
     sudokuBlocks = [];
     allCells = [];
     allFields = [];
     const table = document.getElementById("sudoku");
+    table.setAttribute("data-size", size);
     table.innerHTML = "";
     for(let i = 0; i<size; i++) {
         sudokuStructure[i] = [];
@@ -95,16 +108,18 @@ init = function(size) {
                 cell,
                 sudokuRows[i],
                 sudokuColumns[j],
-                sudokuBlocks[Math.floor(j/3)+3*Math.floor(i/3)]
+                sudokuBlocks[Math.floor(j/xPeriod)+yPeriod*Math.floor(i/yPeriod)]
             )
             sudokuStructure[i][j] = cellObject;
             sudokuRows[i].addCell(cellObject);
             sudokuColumns[j].addCell(cellObject);
-            sudokuBlocks[Math.floor(j/3)+3*Math.floor(i/3)].addCell(cellObject);
+            sudokuBlocks[Math.floor(j/xPeriod)+yPeriod*Math.floor(i/yPeriod)]
+                .addCell(cellObject);
             allCells.push(cellObject);
         }
         table.appendChild(row);
     }
+    displayStatus("Created fresh and clean board")
 }
 
 initsudoku = function() {
@@ -123,8 +138,13 @@ initsudoku = function() {
     document.getElementById("solveEasy").addEventListener("click", solveEasy);
     document.getElementById("solveAll").addEventListener("click", solveAll);
     document.getElementById("reset").addEventListener("click", restart);
-    document.getElementById("clean").setAttribute("onClick", "init(9)");
+    document.getElementById("clean").setAttribute("onClick", "init()");
     document.getElementById("click").addEventListener("click", updateOptions);
+    document.getElementById("4x4").setAttribute("onClick", "init(4)");
+    document.getElementById("6x6").setAttribute("onClick", "init(6)");
+    document.getElementById("9x9").setAttribute("onClick", "init(9)");
+    document.getElementById("12x12").setAttribute("onClick", "init(12)");
+    document.getElementById("16x16").setAttribute("onClick", "init(16)");
 }
 
 window.addEventListener("load", initsudoku);
@@ -451,9 +471,10 @@ function victory() {
 function restart() {
     for (const cell of allCells) {
         cell.dropTempClasses();
-        cell.resetOptions(9);
+        cell.resetOptions(gridSize);
     }
     for (const cell of allCells) {
         cell.resetValue();
     }
+    displayStatus("Board has been reset.")
 }

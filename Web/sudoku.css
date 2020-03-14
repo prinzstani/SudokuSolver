@@ -6,19 +6,82 @@ table {
     border-collapse: collapse;
 }
 
-tr > :nth-child(3n) {
+[data-size="9"] tr > :nth-child(3n) {
     border-right: 3px solid black;
 }
 
-tr > :nth-child(3n+1) {
+[data-size="9"] tr > :nth-child(3n+1) {
     border-left: 3px solid black;
 }
 
-table > :nth-child(3n) {
+table[data-size="9"] > :nth-child(3n) {
     border-bottom: 3px solid black;
 }
 
-table > :nth-child(3n+1) {
+table[data-size="9"] > :nth-child(3n+1) {
+    border-top: 3px solid black;
+}
+
+[data-size="4"] tr > :nth-child(2n) {
+    border-right: 3px solid black;
+}
+
+[data-size="4"] tr > :nth-child(2n+1) {
+    border-left: 3px solid black;
+}
+
+table[data-size="4"] > :nth-child(2n) {
+    border-bottom: 3px solid black;
+}
+
+table[data-size="4"] > :nth-child(2n+1) {
+    border-top: 3px solid black;
+}
+
+[data-size="6"] tr > :nth-child(3n) {
+    border-right: 3px solid black;
+}
+
+[data-size="6"] tr > :nth-child(3n+1) {
+    border-left: 3px solid black;
+}
+
+table[data-size="6"] > :nth-child(2n) {
+    border-bottom: 3px solid black;
+}
+
+table[data-size="6"] > :nth-child(2n+1) {
+    border-top: 3px solid black;
+}
+
+[data-size="12"] tr > :nth-child(4n) {
+    border-right: 3px solid black;
+}
+
+[data-size="12"] tr > :nth-child(4n+1) {
+    border-left: 3px solid black;
+}
+
+table[data-size="12"] > :nth-child(3n) {
+    border-bottom: 3px solid black;
+}
+
+table[data-size="12"] > :nth-child(3n+1) {
+    border-top: 3px solid black;
+}
+[data-size="16"] tr > :nth-child(4n) {
+    border-right: 3px solid black;
+}
+
+[data-size="16"] tr > :nth-child(4n+1) {
+    border-left: 3px solid black;
+}
+
+table[data-size="16"] > :nth-child(4n) {
+    border-bottom: 3px solid black;
+}
+
+table[data-size="16"] > :nth-child(4n+1) {
     border-top: 3px solid black;
 }
 
@@ -33,9 +96,32 @@ td {
 
 .options {
     display: grid;
+    font-size: 1rem;
+}
+
+[data-size="9"] .options {
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    font-size: 1rem;
+}
+
+[data-size="4"] .options {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+}
+
+[data-size="6"] .options {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+}
+
+[data-size="12"] .options {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+}
+
+[data-size="16"] .options {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
 }
 
 .options * {
@@ -61,11 +147,17 @@ td {
 body {
     display: grid;
     grid-template-areas: 
-        'click sudoku control'
-        '.     status .';
+        'click sudoku control grids'
+        '.     status .       .';
     justify-content:  center;
     align-content: center;
     grid-gap: 10px;
+}
+
+#grids {
+    grid-area: grids;
+    display: flex;
+    flex-direction: column;
 }
 
 #click {
