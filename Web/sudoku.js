@@ -11,15 +11,19 @@ const examples = ["6   7 4 1"+" 7   298 "+"     65  "+"73   9  4"+"  261  78"+" 
 				  "3 7  64  "+"5  24    "+" 64 5    "+" 18    2 "+" 5  6  9 "+" 4    57 "+"    2 84 "+"    18  9"+"  96  2 3"];
 
 setExample = function (idx) {
+    gridDiagonals = false;
     init(9);
     parseExample(examples[idx], 9);
 }
 
 let sudokuStructure = [];
 let gridSize = 9;
+let gridDiagonals = false;
+let addDiagonalsWhenNew = false;
 let sudokuRows = [];
 let sudokuColumns = [];
 let sudokuBlocks = [];
+let sudokuDiagonals = [];
 let allCells = [];
 let allFields = [];
 
@@ -67,9 +71,23 @@ updateOptions = function() {
     updateSolveAllWhenSelecting();
 }
 
-init = function(size = gridSize) {
+updateDiagonals = function() {
+    const checkBox = document.getElementById("diagonals");
+    addDiagonalsWhenNew = checkBox.checked;
+}
+
+init = function(size = gridSize, newGridType = false) {
     gridSize = size;
-    let xPeriod = Math.sqrt(size);
+    if (newGridType) {
+        gridDiagonals = addDiagonalsWhenNew;
+        diagonalContainer = document.getElementById("diagonalContainer");
+    }
+    if (gridDiagonals) {
+        diagonalContainer.classList.remove("hide");
+    } else {
+        diagonalContainer.classList.add("hide");
+    }
+let xPeriod = Math.sqrt(size);
     let yPeriod = Math.sqrt(size);
     if (size === 6) {
         xPeriod = 3;
@@ -83,6 +101,7 @@ init = function(size = gridSize) {
     sudokuRows = [];
     sudokuColumns = [];
     sudokuBlocks = [];
+    sudokuDiagonals = [];
     allCells = [];
     allFields = [];
     const table = document.getElementById("sudoku");
@@ -97,6 +116,14 @@ init = function(size = gridSize) {
         allFields.push(sudokuColumns[i]);
         allFields.push(sudokuBlocks[i]);
     }
+    if(diagonals) {
+        const diagonal1 = new Field(size, "diagonal1");
+        const diagonal2 = new Field(size, "diagonal2");
+        sudokuDiagonals.push(diagonal1);
+        sudokuDiagonals.push(diagonal2);
+        allFields.push(diagonal1);
+        allFields.push(diagonal2);
+    }
 
     for(let i = 0; i<size; i++) {
         const row = document.createElement("tr");
@@ -106,21 +133,26 @@ init = function(size = gridSize) {
             row.appendChild(cell);
             const cellObject = new Cell(
                 size,
-                cell,
-                sudokuRows[i],
-                sudokuColumns[j],
-                sudokuBlocks[Math.floor(j/xPeriod)+yPeriod*Math.floor(i/yPeriod)]
+                cell
             )
             sudokuStructure[i][j] = cellObject;
             sudokuRows[i].addCell(cellObject);
             sudokuColumns[j].addCell(cellObject);
             sudokuBlocks[Math.floor(j/xPeriod)+yPeriod*Math.floor(i/yPeriod)]
                 .addCell(cellObject);
+            if (diagonals) {
+                if (i === j) {
+                    sudokuDiagonals[0].addCell(cellObject);
+                }
+                if (size-i-1 === j) {
+                    sudokuDiagonals[1].addCell(cellObject);
+                }
+            }
             allCells.push(cellObject);
         }
         table.appendChild(row);
     }
-    displayStatus("Created fresh and clean board")
+    displayStatus("Created fresh and clean board");
 }
 
 initsudoku = function() {
@@ -141,21 +173,26 @@ initsudoku = function() {
     document.getElementById("reset").addEventListener("click", restart);
     document.getElementById("clean").setAttribute("onClick", "init()");
     document.getElementById("click").addEventListener("click", updateOptions);
-    document.getElementById("4x4").setAttribute("onClick", "init(4)");
-    document.getElementById("6x6").setAttribute("onClick", "init(6)");
-    document.getElementById("9x9").setAttribute("onClick", "init(9)");
-    document.getElementById("12x12").setAttribute("onClick", "init(12)");
-    document.getElementById("16x16").setAttribute("onClick", "init(16)");
+    document.getElementById("diagonals").addEventListener("click", updateDiagonals);
+    document.getElementById("4x4").setAttribute("onClick", "init(4, true)");
+    document.getElementById("6x6").setAttribute("onClick", "init(6, true)");
+    document.getElementById("9x9").setAttribute("onClick", "init(9, true)");
+    document.getElementById("12x12").setAttribute("onClick", "init(12, true)");
+    document.getElementById("16x16").setAttribute("onClick", "init(16, true)");
 }
 
 window.addEventListener("load", initsudoku);
 
 class Cell {
-    constructor(size, htmlElement, row, column, block) {
+    constructor(size, htmlElement) {
         this.options = Cell.getAllAvailabeOptions(size);
         this.htmlElement = htmlElement;
         this.showOptions();
-        this.fields = [row, column, block];
+        this.fields = [];
+    }
+
+    addField(field) {
+        this.fields.push(field);
     }
 
     static getAllAvailabeOptions(size) {
@@ -254,6 +291,7 @@ class Field {
 
     addCell(cell) {
         this.cells.push(cell);
+        cell.addField(this);
     }
 
     removeOption(option) {

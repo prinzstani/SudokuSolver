@@ -16,7 +16,7 @@
                 <label for="removeOption">Click option to remove.</label>
             </div>
             <div class="clickContainer">
-                 <input type="checkbox" id="setAsInitial">
+                <input type="checkbox" id="setAsInitial">
                 <label for="setAsInitial">Set option as inital when selecting.</label>
             </div>
             <div class="clickContainer">
@@ -24,8 +24,11 @@
                 <label for="solveWhenSelecting">Solve All when selecting.</label>
             </div>
         </div>
-        <table id="sudoku">
-        </table>
+        <table id="sudoku"></table>
+        <svg id="diagonalContainer" preserveAspectRatio="none" class="diagonalContainer" viewbox="0 0 100 100">
+            <line x1="0" y1="0" x2="100" y2="100"></line>
+            <line x1="0" y1="100" x2="100" y2="0"></line>
+        </svg>        
         <div id="status">I am a status</div>
         <div id="control">
             <button id="solveOne">Solve One</button>
@@ -40,6 +43,10 @@
             <button id="9x9">9x9 Grid</button>
             <button id="12x12">12x12 Grid</button>
             <button id="16x16">16x16 Grid</button>
+            <div class="clickContainer">
+                <input type="checkbox" id="diagonals">
+                <label for="diagonals">Create new grid with diagonals.</label>
+            </div>
         </div>
     </body>
 </html>
