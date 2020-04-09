@@ -16,6 +16,34 @@ setExample = function (idx) {
     parseExample(examples[idx], 9);
 }
 
+getSudokuString = function() {
+    sudokuString = window.location.href.split('?')[0];
+    sudokuString += '?puzzle='
+    sudokuString += gridSize + 'x' + gridSize;
+    sudokuString += gridDiagonals ? 'diagonal' : '';
+    sudokuString += '-';
+    for (row of sudokuStructure) {
+        for (cell of row) {
+            sudokuString += cell.initial ? cell.value : '.';
+        }
+    } 
+    sudokuString += '-';
+    console.log(sudokuString);
+    navigator.clipboard.writeText(sudokuString);
+}
+
+readSudokuString = function(sudokuString) {
+    [identifier, content] = sudokuString.split('-');
+    [size, type] = identifier.split('x');
+    type = type.replace(size, '');
+    size = parseInt(size);
+    if(type == "diagonal") {
+        addDiagonalsWhenNew = true;
+    }
+    init(size, true);
+    parseExample(content, size);
+}
+
 let sudokuStructure = [];
 let gridSize = 9;
 let gridDiagonals = false;
@@ -31,7 +59,7 @@ parseExample = function (example, size) {
     for(let i = 0; i<size; i++) {
         for (let j = 0; j<size; j++) {
             const character = example.charAt(i*size+j)
-            if (character != ' ') {
+            if (character > '0' && character <= '9') {
                 sudokuStructure[i][j].setValue(parseInt(character), true);
             }
         }
@@ -87,7 +115,7 @@ init = function(size = gridSize, newGridType = false) {
     } else {
         diagonalContainer.classList.add("hide");
     }
-let xPeriod = Math.sqrt(size);
+    let xPeriod = Math.sqrt(size);
     let yPeriod = Math.sqrt(size);
     if (size === 6) {
         xPeriod = 3;
@@ -159,7 +187,13 @@ initsudoku = function() {
     updateOptions();
     const buttons = document.getElementById("control");
 
-	init(9);
+    initPuzzle = new URLSearchParams(window.location.search).get('puzzle');
+    if(initPuzzle) {
+        readSudokuString(initPuzzle);
+    } else {
+        init(9);
+    }
+
 	for (ex in examples) {
 		const bb = document.createElement("button");
 		bb.innerHTML = "Example " + (parseInt(ex)+1);
@@ -172,6 +206,7 @@ initsudoku = function() {
     document.getElementById("solveAll").addEventListener("click", solveAll);
     document.getElementById("reset").addEventListener("click", restart);
     document.getElementById("clean").setAttribute("onClick", "init()");
+    document.getElementById("export").addEventListener("click", getSudokuString);
     document.getElementById("click").addEventListener("click", updateOptions);
     document.getElementById("diagonals").addEventListener("click", updateDiagonals);
     document.getElementById("4x4").setAttribute("onClick", "init(4, true)");
