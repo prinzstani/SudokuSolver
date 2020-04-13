@@ -1,20 +1,15 @@
 // sudoku solver - most possible human
 
-const examples = ["6   7 4 1"+" 7   298 "+"     65  "+"73   9  4"+"  261  78"+"    8    "+" 4 96 7 3"+" 8  53 42"+" 5    8  ",
-				  "    3   4"+"16 57 2  "+" 3   1  8"+"  9      "+"78 3 4 95"+"      1  "+"9  6   4 "+"  3 59 27"+"8   1    ",
-				  " 628   3 "+"  5  7  8"+"  4 9   6"+"4    9   "+"  7   5  "+"   2    1"+"8   5 7  "+"5  9  1  "+" 2   465 ",
-				  "4      9 "+"18  5 3  "+"  3   2  "+"   73  1 "+"94   8   "+"7     9  "+" 7   6   "+"  6   7 5"+"8   4    ",
-				  "  9  7 8 "+"83       "+" 1 6    7"+"    48  1"+"  6 3 8  "+"9  15    "+"2    1 6 "+"       54"+" 6 3  7  ",
-				  " 2   1   "+" 5 8   1 "+"   4 23  "+"4    7298"+"5       1"+" 39   4  "+"  3 45 6 "+"         "+"  8 6    ",
-				  "  2 4    "+" 5  7  3 "+"4 3  6  8"+"     95 1"+" 4  8  7 "+"1 67     "+"5  8  2 6"+" 6  3  5 "+"    2 8  ",
-				  "4  76 9 2"+" 79 28   "+"         "+"   8   63"+"  29 31  "+"34   6   "+"         "+"   15 78 "+"5 1 87  9",
-				  "3 7  64  "+"5  24    "+" 64 5    "+" 18    2 "+" 5  6  9 "+" 4    57 "+"    2 84 "+"    18  9"+"  96  2 3"];
-
-setExample = function (idx) {
-    gridDiagonals = false;
-    init(9);
-    parseExample(examples[idx], 9);
-}
+const examples = ["9x9-6...7.4.1.7...298......65..73...9..4..261..78....8.....4.96.7.3.8..53.42.5....8..-",
+				  "9x9-....3...416.57.2...3...1..8..9......78.3.4.95......1..9..6...4...3.59.278...1....-",
+				  "9x9-.628...3...5..7..8..4.9...64....9.....7...5.....2....18...5.7..5..9..1...2...465.-",
+				  "9x9-4......9.18..5.3....3...2.....73..1.94...8...7.....9...7...6.....6...7.58...4....-",
+				  "9x9-..9..7.8.83........1.6....7....48..1..6.3.8..9..15....2....1.6........54.6.3..7..-",
+				  "9x9-.2...1....5.8...1....4.23..4....72985.......1.39...4....3.45.6............8.6....-",
+				  "9x9-..2.4.....5..7..3.4.3..6..8.....95.1.4..8..7.1.67.....5..8..2.6.6..3..5.....2.8..-",
+				  "9x9-4..76.9.2.79.28...............8...63..29.31..34...6...............15.78.5.1.87..9-",
+				  "9x9-3.7..64..5..24.....64.5.....18....2..5..6..9..4....57.....2.84.....18..9..96..2.3-",
+				  "9x9diagonal-.9.....4.4..7..1.3...95..7..89........4...2........75..6..72...2.8..6..5.4.....2.-"];
 
 getSudokuString = function() {
     sudokuString = window.location.href.split('?')[0];
@@ -37,10 +32,8 @@ readSudokuString = function(sudokuString) {
     [size, type] = identifier.split('x');
     type = type.replace(size, '');
     size = parseInt(size);
-    if(type == "diagonal") {
-        addDiagonalsWhenNew = true;
-    }
-    init(size, true);
+    gridDiagonals = (type == "diagonal");
+    init(size, false);
     parseExample(content, size);
 }
 
@@ -144,7 +137,7 @@ init = function(size = gridSize, newGridType = false) {
         allFields.push(sudokuColumns[i]);
         allFields.push(sudokuBlocks[i]);
     }
-    if(diagonals) {
+    if(gridDiagonals) {
         const diagonal1 = new Field(size, "diagonal1");
         const diagonal2 = new Field(size, "diagonal2");
         sudokuDiagonals.push(diagonal1);
@@ -168,7 +161,7 @@ init = function(size = gridSize, newGridType = false) {
             sudokuColumns[j].addCell(cellObject);
             sudokuBlocks[Math.floor(j/xPeriod)+yPeriod*Math.floor(i/yPeriod)]
                 .addCell(cellObject);
-            if (diagonals) {
+            if (gridDiagonals) {
                 if (i === j) {
                     sudokuDiagonals[0].addCell(cellObject);
                 }
@@ -197,7 +190,7 @@ initsudoku = function() {
 	for (ex in examples) {
 		const bb = document.createElement("button");
 		bb.innerHTML = "Example " + (parseInt(ex)+1);
-		bb.setAttribute("onClick", "setExample("+ex+")");
+		bb.setAttribute("onClick", "readSudokuString(examples["+ex+"])");
 		buttons.appendChild(bb);
     }
 
