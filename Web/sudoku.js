@@ -118,7 +118,7 @@ init = function(size = gridSize, newGridType = false) {
         xPeriod = 4;
         yPeriod = 3;
     }
-   sudokuStructure = [];
+    sudokuStructure = [];
     sudokuRows = [];
     sudokuColumns = [];
     sudokuBlocks = [];
@@ -173,6 +173,18 @@ init = function(size = gridSize, newGridType = false) {
         }
         table.appendChild(row);
     }
+	
+	for (let i=0; i<allFields.length; i++) {
+		for (let j=i+1; j<allFields.length; j++) {
+			var jointCells = [];
+			for (const cell of allFields[i].cells) {
+				if (allFields[j].cells.includes(cell)) jointCells.push(cell);
+			}
+			if (jointCells.length<2) continue;
+			allFields[i].addOverlappingField(allFields[j],jointCells);
+			allFields[j].addOverlappingField(allFields[i],jointCells);
+        }
+	}
     displayStatus("Created fresh and clean board");
 }
 
@@ -315,6 +327,7 @@ class Field {
         this.cells = [];
         this.name = name;
         this.size = size;
+		this.overlappingFields = [];
     }
 
     addCell(cell) {
@@ -322,6 +335,10 @@ class Field {
         cell.addField(this);
     }
 
+	addOverlappingField(otherField,overlap) {
+		this.overlappingFields.push([otherField,overlap]);
+	}
+	
     removeOption(option) {
         this.cells.forEach(cell => cell.removeOption(option))
     }
@@ -355,17 +372,17 @@ class Field {
         return false;
     }
 
-    checkBetween(otherField) {
+    checkBetweenOverlap() {
         if (this.done) return false;
-        if (otherField === this) return false;
-        var jointCells = [];
+		for (const other of this.overlappingFields) {
+			if (this.checkBetween(...other)) return true;
+		}
+		return false;
+	}
+    checkBetween(otherField,jointCells) {
         var mySelectedCells = [];
         var otherSelectedCells = [];
         var jointSelectedCells = [];
-        for (const cell of otherField.cells) {
-            if (this.cells.includes(cell)) jointCells.push(cell);
-        }
-        if (jointCells.length<2) return false;
         for (const option of Cell.getAllAvailabeOptions(this.size)) {
             mySelectedCells = [];
             for (const cell of this.cells) {
@@ -449,6 +466,46 @@ class Field {
         }
         return false;
     }
+	
+	findColours() {
+		// find alternatives for this field
+		if (this.done) return false;
+		console.log("finding colours for " + this.name);
+		const notSolvedCells = this.cells.filter(c => !c.value);
+		let colours = [[]];
+		for (const cell of notSolvedCells) {
+			const tempColours = [];
+			for (const colour of colours) {
+				const unusedOptions = cell.options.filter(o => !colour.includes(o));
+				for (const option of unusedOptions) {
+					tempColours.push([...colour, option]);
+				}
+			}
+			if (tempColours.length>16) return false;
+			colours = tempColours;
+		}
+		console.log(colours);
+		this.colours=colours;
+		this.notSolvedCells=notSolvedCells;
+	}
+
+	alignColours(otherField) {
+		if (this.done) return false;
+		if (otherField.done) return false;
+		const mediators = [];
+		for (const mediator of this.overlappingFields) {
+			if (mediator[0].done) continue;
+			for (const m2 of otherField.overlappingFields) {
+				if (mediator[0] == m2[0]) {
+					if (mediator[1].filter(c => !c.value).length==0) break;
+					if (m2[1].filter(c => !c.value).length==0) break;
+					mediators.push([...mediator,m2[1]]);
+					break;
+				}
+			}
+		}
+		if (mediators.length>0) console.log("try colouring " + this.name + " with " + otherField.name + " using " + mediators.map(m => m[0].name));
+	}
 }
 
 function solve(stopAtDifficulty, keepGoing) {
@@ -491,16 +548,13 @@ function solve(stopAtDifficulty, keepGoing) {
 
         difficultyReached = 3;
         for (const field1 of allFields) {
-            for (const field2 of allFields) {
-                if (field1.checkBetween(field2)) {
-                    foundSomething = true;
-                    break solveAttempts;
-                }
-            }
+			if (field1.checkBetweenOverlap()) {
+                foundSomething = true;
+                break solveAttempts;
+			}
         }
 
         difficultyReached = 4;
-
         for (const field of allFields) {
             if (field.checkGroups()) {
                 foundSomething = true;
@@ -509,6 +563,18 @@ function solve(stopAtDifficulty, keepGoing) {
         }
 
         difficultyReached = 5;
+        for (const field of allFields) {
+			field.findColours();
+        }
+		for (let i=0; i<allFields.length; i++) {
+			for (let j=i+1; j<allFields.length; j++) {
+				if (allFields[i].alignColours(allFields[j])) {
+					foundSomething = true;
+					break solveAttempts;
+				}
+			}
+		}
+        difficultyReached = 6;
     }
 
     if (foundSomething 
