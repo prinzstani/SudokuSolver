@@ -472,26 +472,37 @@ class Field {
 		if (this.done) return false;
 		console.log("finding colours for " + this.name);
 		const notSolvedCells = this.cells.filter(c => !c.value);
-		let colours = [[]];
+		let colours = [new Map()];
 		for (const cell of notSolvedCells) {
 			const tempColours = [];
 			for (const colour of colours) {
-				const unusedOptions = cell.options.filter(o => !colour.includes(o));
+				const unusedOptions = cell.options.filter(o => !Array.from(colour.values).includes(o));
 				for (const option of unusedOptions) {
-					tempColours.push([...colour, option]);
+					tempColours.push(new Map(colour).set(cell, option));
 				}
 			}
 			if (tempColours.length>16) return false;
 			colours = tempColours;
 		}
-		console.log(colours);
 		this.colours=colours;
 		this.notSolvedCells=notSolvedCells;
+		// checking if we can remove some options
+/*
+		for (let i=0; i<notSolvedCells.length; i++) {
+			let opti=[];
+			for (const colour of colours) opti.push(colour[i]);
+			for (const o of notSolvedCells[i].options) {
+				if (!opti.includes(o)) console.log("### can remove option " + o + " from cell " + notSolvedCells[i].name);
+			}
+		}
+*/
 	}
 
 	alignColours(otherField) {
 		if (this.done) return false;
+		if (!this.colours) return false;
 		if (otherField.done) return false;
+		if (!otherField.colours) return false;
 		const mediators = [];
 		for (const mediator of this.overlappingFields) {
 			if (mediator[0].done) continue;
@@ -504,7 +515,13 @@ class Field {
 				}
 			}
 		}
-		if (mediators.length>0) console.log("try colouring " + this.name + " with " + otherField.name + " using " + mediators.map(m => m[0].name));
+		if (mediators.length == 0) return false;
+		console.log("try colouring " + this.name + " with " + otherField.name + " using " + mediators.map(m => m[0].name));
+		let alignCells=[...this.notSolvedCells];
+		for (const c of otherField.notSolvedCells) {
+			if (!alignCells.includes(c)) alignCells.push(c);
+		}
+		console.log("using cells ", alignCells);
 	}
 }
 
