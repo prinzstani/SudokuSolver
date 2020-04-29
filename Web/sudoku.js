@@ -480,11 +480,14 @@ class Field {
 					tempColours.push(new Map(colour).set(cell, option));
 				}
 			}
+			if(this.name=="block5") console.log("tempcolours of "+this.name+" are",tempColours);
 			if (tempColours.length>16) return false;
 			colours = tempColours;
 		}
+		if (colours.length>16) return false;
 		this.colours=colours;
 		this.notSolvedCells=notSolvedCells;
+		if(this.name=="block5") console.log("colours of "+this.name+" are",colours);
 		// checking if we can remove some options
 		for (let i=0; i<notSolvedCells.length; i++) {
 			let opti=[];
@@ -503,23 +506,54 @@ class Field {
 		const mediators = [];
 		for (const mediator of this.overlappingFields) {
 			if (mediator[0].done) continue;
+			if (!mediator[0].colours) continue;
 			for (const m2 of otherField.overlappingFields) {
 				if (mediator[0] == m2[0]) {
 					if (mediator[1].filter(c => !c.value).length==0) break;
 					if (m2[1].filter(c => !c.value).length==0) break;
-					mediators.push([...mediator,m2[1]]);
+					mediators.push(mediator[0]);
 					break;
 				}
 			}
 		}
 		if (mediators.length == 0) return false;
-		console.log("try colouring " + this.name + " with " + otherField.name + " using " + mediators.map(m => m[0].name));
+//		console.log("try colouring " + this.name + " with " + otherField.name + " using " + mediators.map(m => m.name));
 		let alignCells=[...this.notSolvedCells];
 		for (const c of otherField.notSolvedCells) {
 			if (!alignCells.includes(c)) alignCells.push(c);
 		}
-		console.log("using cells ", alignCells);
+//		console.log("using cells ", alignCells);
+		let commonColours=[...this.colours];
+		mediators.push(otherField); // merge other field as last field
+		for (const mediator of mediators) {
+			if(mediator.name=="block5") console.log("mediator is", mediator);
+			const tempColours = [];
+			for (const colour of commonColours) {
+				for (const colour2 of mediator.colours) {
+					const resultColour=mergeColours(colour, colour2);
+					if (resultColour) {
+						tempColours.push(resultColour);
+					}
+				}
+			}
+//			if (tempColours.length>16) return false;
+			commonColours = tempColours;
+		}
+//		console.log("merged colours are",commonColours);
 	}
+}
+
+function mergeColours(colour1, colour2) {
+	const result=new Map(colour1);
+	for (let [cell,option2] of colour2) {
+		const option1=result.get(cell);
+		if (option1) {
+			if (option1!=option2) return null;
+		} else {
+			result.set(cell, option2);
+		}
+	}
+	return result;
 }
 
 function solve(stopAtDifficulty, keepGoing) {
