@@ -149,6 +149,30 @@ td {
     background-color: yellow;
 }
 
+.colour1 {
+    background-color: red;
+}
+
+.colour2 {
+    background-color: blue;
+}
+
+.colour3 {
+    background-color: orange;
+}
+
+.colour4 {
+    background-color: purple;
+}
+
+.colour5 {
+    background-color: pink;
+}
+
+.colour6 {
+    background-color: white;
+}
+
 .diagonalContainer {
     grid-area: sudoku;
     width: 100%;

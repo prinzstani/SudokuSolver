@@ -227,8 +227,10 @@ class Cell {
     constructor(size, htmlElement) {
         this.options = Cell.getAllAvailabeOptions(size);
         this.htmlElement = htmlElement;
-        this.showOptions();
         this.fields = [];
+		this.colours = {};
+
+        this.showOptions();
     }
 
     addField(field) {
@@ -286,6 +288,12 @@ class Cell {
         this.htmlElement.classList.add("hint");
     }
 
+    setColour(option,colour) {
+		if (option == 7) console.log("setting option " + option + " to colour " + colour, this);
+		this.colours[option]=colour;
+		this.showOptions();
+    }
+
     setNew() {
         this.htmlElement.classList.add("new");
     }
@@ -307,6 +315,7 @@ class Cell {
         optionsContainer.classList = ["options"];
         this.options.map(option => {
             const optionDiv = document.createElement("div");
+			if (this.colours[option]) optionDiv.classList = ["colour"+this.colours[option]];
             optionDiv.innerHTML = option;
             optionDiv.addEventListener("click", () => {
                 this.optionClicked(option);
@@ -319,6 +328,8 @@ class Cell {
     dropTempClasses() {
         this.htmlElement.classList.remove("new");
         this.htmlElement.classList.remove("hint");
+		this.colours = {};
+		if (!this.value) this.showOptions();
     }
 }
 
@@ -481,7 +492,7 @@ class Field {
 				}
 			}
 			if(this.name=="block5") console.log("tempcolours of "+this.name+" are",tempColours);
-			if (tempColours.length>16) return false;
+			if (tempColours.length>50) return false;
 			colours = tempColours;
 		}
 		if (colours.length>16) return false;
@@ -540,6 +551,30 @@ class Field {
 			commonColours = tempColours;
 		}
 //		console.log("merged colours are",commonColours);
+		let haveChanges=false;
+		for (let i=0; i<alignCells.length; i++) {
+			let opti=[];
+			for (const colour of commonColours) opti.push(colour.get(alignCells[i]));
+			for (const o of alignCells[i].options) {
+				if (!opti.includes(o)) {
+					alignCells[i].removeOption(o);
+					alignCells[i].setNew();
+					console.log("### can remove option " + o + " from cell ", alignCells[i]);
+					haveChanges=true;
+				}
+			}
+		}
+		if (haveChanges) {
+            for (const cell of alignCells) cell.setHint();
+            displayStatus("Delete uncoloured options.");
+			for (let i=0; i<commonColours.length; i++) {
+				for (const cell of alignCells) {
+					cell.setColour(commonColours[i].get(cell),i+1);
+				}
+			}
+			console.log("try colouring " + this.name + " with " + otherField.name + " using " + mediators.map(m => m.name), alignCells);
+        }
+        return haveChanges;
 	}
 }
 
