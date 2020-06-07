@@ -289,7 +289,6 @@ class Cell {
     }
 
     setColour(option,colour) {
-		if (option == 7) console.log("setting option " + option + " to colour " + colour, this);
 		this.colours[option]=colour;
 		this.showOptions();
     }
@@ -493,14 +492,12 @@ class Field {
 					tempColours.push(new Map(colour).set(cell, option));
 				}
 			}
-			if(this.name=="block5") console.log("tempcolours of "+this.name+" are",tempColours);
 			if (tempColours.length>50) return false;
 			colours = tempColours;
 		}
 		if (colours.length>16) return false;
 		this.colours=colours;
 		this.notSolvedCells=notSolvedCells;
-		if(this.name=="block5") console.log("colours of "+this.name+" are",colours);
 		// checking if we can remove some options
 		for (let i=0; i<notSolvedCells.length; i++) {
 			let opti=[];
@@ -537,7 +534,6 @@ class Field {
 		let commonColours=[...this.colours];
 		mediators.push(otherField); // merge other field as last field
 		for (const mediator of mediators) {
-			if(mediator.name=="block5") console.log("mediator is", mediator);
 			const tempColours = [];
 			for (const colour of commonColours) {
 				for (const colour2 of mediator.colours) {
@@ -568,7 +564,6 @@ class Field {
 				if (!opti.includes(o)) {
 					alignCells[i].removeOption(o);
 					alignCells[i].setNew();
-					console.log("### can remove option " + o + " from cell ", alignCells[i]);
 					haveChanges=true;
 				}
 			}
@@ -581,7 +576,6 @@ class Field {
 					cell.setColour(commonColours[i].get(cell),i+1);
 				}
 			}
-			console.log("try colouring " + this.name + " with " + otherField.name + " using " + mediators.map(m => m.name), alignCells);
         }
         return haveChanges;
 	}
@@ -601,9 +595,6 @@ class Field {
 				}
 				if (commonColours.length>100) continue;
 				const alignCells=Array.from(commonColours[0].keys());
-				if(this.name=="block4") {
-					console.log("found "+commonColours.length+" colours for ",this.name,keys[i].name,keys[j].name);
-				}
 				let haveChanges=false;
 				for (let i=0; i<alignCells.length; i++) {
 					let opti=[];
@@ -612,7 +603,6 @@ class Field {
 						if (!opti.includes(o)) {
 							alignCells[i].removeOption(o);
 							alignCells[i].setNew();
-							console.log("### can remove more options " + o + " from cell ", alignCells[i]);
 							haveChanges=true;
 						}
 					}
@@ -654,9 +644,6 @@ class Field {
 					}
 					if (commonColours.length>100) continue;
 					const alignCells=Array.from(commonColours[0].keys());
-					// if(this.name=="block4") {
-						console.log("found "+commonColours.length+" colours for ",this.name,keys[i].name,keys[j].name,keys[k].name, commonColours);
-					// }
 					if (checkChanges(alignCells,commonColours)) return true;
 				}
 				for (let k=0; k< field2.jointColourings.size; k++) {
@@ -668,7 +655,6 @@ class Field {
 								if(!intermediateColour) continue;
 								const resultColour=mergeColours(intermediateColour, colour3);
 								if (resultColour) {
-									console.log("found colour",colour,colour2,colour3,resultColour)
 									commonColours.push(resultColour);
 								}
 							}
@@ -676,9 +662,6 @@ class Field {
 					}
 					if (commonColours.length>100) continue;
 					const alignCells=Array.from(commonColours[0].keys());
-//					if(this.name=="block4") {
-						console.log("found "+commonColours.length+" colours for ",this.name,keys[i].name,keys[j].name,keys2[k].name, commonColours);
-//					}
 					if (checkChanges(alignCells,commonColours)) return true;
 				}
 			}
@@ -696,7 +679,6 @@ function checkChanges(alignCells,commonColours) {
 			if (!opti.includes(o)) {
 				alignCells[i].removeOption(o);
 				alignCells[i].setNew();
-				console.log("### can remove even more options " + o + " from cell ", alignCells[i]);
 				haveChanges=true;
 			}
 		}
