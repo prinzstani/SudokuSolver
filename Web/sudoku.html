@@ -23,6 +23,14 @@
                 <input type="checkbox" id="solveWhenSelecting">
                 <label for="solveWhenSelecting">Solve All when selecting.</label>
             </div>
+            <div class="clickContainer">
+                <label for="mode">Mode:</label>
+                <select name="mode" id="mode">
+                    <option value="solve">Solve</option>
+                    <option value="create">Create</option>
+                    <option value="debug">Debug</option>
+                </select>
+            </div>
         </div>
         <table id="sudoku"></table>
         <svg id="diagonalContainer" preserveAspectRatio="none" class="diagonalContainer" viewbox="0 0 100 100">
