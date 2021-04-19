@@ -44,6 +44,7 @@ let sudokuStructure = [];
 let gridSize = 9;
 let gridDiagonals = false;
 let addDiagonalsWhenNew = false;
+let mode; // solver mode
 let sudokuRows = [];
 let sudokuColumns = [];
 let sudokuBlocks = [];
@@ -68,28 +69,15 @@ displayStatus = function (str) {
     status.innerHTML = str;
 }
 
-let selectAsInitial;
-
-updateSelectAsInitial = function() {
-    const checkBox = document.getElementById("setAsInitial");
-    selectAsInitial = checkBox.checked;
-}
-
-let solveAllWhenSelecting;
-
-updateSolveAllWhenSelecting = function() {
-    const checkBox = document.getElementById("solveWhenSelecting");
-    solveAllWhenSelecting = checkBox.checked;
-}
-
-updateOptions = function() {
-    updateSelectAsInitial();
-    updateSolveAllWhenSelecting();
-}
-
 updateDiagonals = function() {
     const checkBox = document.getElementById("diagonals");
     addDiagonalsWhenNew = checkBox.checked;
+}
+
+updateMode = function() {
+    const modeDropdown = document.getElementById("mode");
+    mode = modeDropdown.options[modeDropdown.selectedIndex].text;
+    initsudoku();
 }
 
 init = function(size = gridSize, newGridType = false) {
@@ -184,8 +172,8 @@ init = function(size = gridSize, newGridType = false) {
 }
 
 initsudoku = function() {
-    updateOptions();
     const buttons = document.getElementById("control");
+    const exampleContainer = document.getElementById("examples");
 
     initPuzzle = new URLSearchParams(window.location.search).get('puzzle');
     if(initPuzzle) {
@@ -194,11 +182,14 @@ initsudoku = function() {
         init(9);
     }
 
-	for (ex in examples) {
-		const bb = document.createElement("button");
-		bb.innerHTML = "Example " + (parseInt(ex)+1);
-		bb.setAttribute("onClick", "readSudokuString(examples["+ex+"])");
-		buttons.appendChild(bb);
+    exampleContainer.innerHTML="";
+	if (mode=="Debug") {
+        for (ex in examples) {
+            const bb = document.createElement("button");
+            bb.innerHTML = "Example " + (parseInt(ex)+1);
+            bb.setAttribute("onClick", "readSudokuString(examples["+ex+"])");
+            exampleContainer.appendChild(bb);
+        }
     }
 
     document.getElementById("solveOne").addEventListener("click", solveOne);
@@ -207,8 +198,8 @@ initsudoku = function() {
     document.getElementById("reset").addEventListener("click", restart);
     document.getElementById("clean").setAttribute("onClick", "init()");
     document.getElementById("export").addEventListener("click", getSudokuString);
-    document.getElementById("click").addEventListener("click", updateOptions);
     document.getElementById("diagonals").addEventListener("click", updateDiagonals);
+    document.getElementById("mode").addEventListener("change", updateMode);
     document.getElementById("4x4").setAttribute("onClick", "init(4, true)");
     document.getElementById("6x6").setAttribute("onClick", "init(6, true)");
     document.getElementById("9x9").setAttribute("onClick", "init(9, true)");
@@ -216,7 +207,8 @@ initsudoku = function() {
     document.getElementById("16x16").setAttribute("onClick", "init(16, true)");
 }
 
-window.addEventListener("load", initsudoku);
+//window.addEventListener("load", initsudoku);
+window.addEventListener("load", updateMode);
 
 class Cell {
     constructor(size, htmlElement) {
@@ -263,8 +255,8 @@ class Cell {
     }
 
     selectOption(option) {
-        this.setValue(option, selectAsInitial);
-        if (solveAllWhenSelecting) solveAll();
+        this.setValue(option, mode!="Manual");
+        if (mode=="Create") solveAll();
     }
 
     removeOption(optionToRemove) {

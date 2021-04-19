@@ -240,3 +240,7 @@ body {
 .lastControlItem {
     margin-bottom: auto;
 }
+
+#examples {
+    display: contents;
+}

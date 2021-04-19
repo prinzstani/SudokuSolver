@@ -8,17 +8,10 @@
         <script src="sudoku.js"></script>
         <div id="click">
             <div class="clickContainer">
-                <input type="checkbox" id="setAsInitial">
-                <label for="setAsInitial">Set option as inital when selecting.</label>
-            </div>
-            <div class="clickContainer">
-                <input type="checkbox" id="solveWhenSelecting">
-                <label for="solveWhenSelecting">Solve All when selecting.</label>
-            </div>
-            <div class="clickContainer">
                 <label for="mode">Mode:</label>
                 <select name="mode" id="mode">
-                    <option value="solve">Solve</option>
+                    <option value="auto">Automatic</option>
+                    <option value="manual">Manual</option>
                     <option value="create">Create</option>
                     <option value="debug">Debug</option>
                 </select>
@@ -37,6 +30,7 @@
             <button id="reset">Reset</button>
             <button id="clean">Clean</button>
             <button id="export" class="lastControlItem">Export</button>
+            <div id="examples"></div>
         </div>
         <div id="grids">
             <button id="4x4">4x4 Grid</button>
