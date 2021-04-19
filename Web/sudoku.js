@@ -76,7 +76,8 @@ updateDiagonals = function() {
 
 updateMode = function() {
     const modeDropdown = document.getElementById("mode");
-    mode = modeDropdown.options[modeDropdown.selectedIndex].text;
+    mode = modeDropdown.options[modeDropdown.selectedIndex].value;
+    console.log("updated mode to "+modeDropdown.options[modeDropdown.selectedIndex].value);
     initsudoku();
 }
 
@@ -183,7 +184,7 @@ initsudoku = function() {
     }
 
     exampleContainer.innerHTML="";
-	if (mode=="Debug") {
+	if (mode=="debug") {
         for (ex in examples) {
             const bb = document.createElement("button");
             bb.innerHTML = "Example " + (parseInt(ex)+1);
@@ -255,8 +256,8 @@ class Cell {
     }
 
     selectOption(option) {
-        this.setValue(option, mode!="Manual");
-        if (mode=="Create") solveAll();
+        this.setValue(option, mode!="manual");
+        if (mode=="create") solveAll();
     }
 
     removeOption(optionToRemove) {
