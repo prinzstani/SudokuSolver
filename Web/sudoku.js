@@ -68,13 +68,6 @@ displayStatus = function (str) {
     status.innerHTML = str;
 }
 
-let selectOptionOnClick;
-
-updateOptionClickResult = function() {
-    const selectedRadioButton = document.querySelector('input[name="clickResult"]:checked');
-    selectOptionOnClick = selectedRadioButton.value === "true";
-}
-
 let selectAsInitial;
 
 updateSelectAsInitial = function() {
@@ -90,7 +83,6 @@ updateSolveAllWhenSelecting = function() {
 }
 
 updateOptions = function() {
-    updateOptionClickResult();
     updateSelectAsInitial();
     updateSolveAllWhenSelecting();
 }
@@ -270,12 +262,6 @@ class Cell {
 		}
     }
 
-    optionClicked(option) {
-        selectOptionOnClick
-            ? this.selectOption(option)
-            : this.removeOption(option);
-    }
-
     selectOption(option) {
         this.setValue(option, selectAsInitial);
         if (solveAllWhenSelecting) solveAll();
@@ -319,8 +305,12 @@ class Cell {
             const optionDiv = document.createElement("div");
 			if (this.colours[option]) optionDiv.classList = ["colour"+this.colours[option]];
             optionDiv.innerHTML = option;
-            optionDiv.addEventListener("click", () => {
-                this.optionClicked(option);
+            optionDiv.addEventListener("click", (event) => {
+                this.selectOption(option);
+            });
+            optionDiv.addEventListener("contextmenu", (event) => {
+                event.preventDefault();
+                this.removeOption(option);
             });
             optionsContainer.appendChild(optionDiv);
         })
