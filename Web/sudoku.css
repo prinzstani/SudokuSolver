@@ -1,3 +1,27 @@
+:root {
+  --colour1: green;
+  --colour2: blue;
+  --colour3: yellow;
+  --colour4: red;
+  --colour5: pink;
+  --colour6: white;
+  --colour7: cyan;
+  --colour8: brown;
+  --colour9: magenta;
+  --colour10: olive;
+  --colour11: purple;
+  --colour12: orange;
+  --colour13: tomato;
+  --colour14: grey;
+  --colour15: lightgrey;
+  --colour16: lightyellow;
+  --colour17: indigo;
+  --colour18: khaki;
+  --colour19: darkcyan;
+  --colour20: navy;
+  --colourXX: black;
+}
+
 html, body {
     min-height: 100%;
 }
@@ -149,28 +173,39 @@ td {
     background-color: yellow;
 }
 
-.colour1 {
+.removed {
+    color: red;
+    opacity: .4
+}
+
+.has-1-colours {
     background-color: red;
+    background-image: conic-gradient(var(--par1) 0deg, var(--par1) 180deg, var(--par1) 180deg);
+    border-radius: 50%;
 }
 
-.colour2 {
-    background-color: blue;
+.has-2-colours {
+    background-color: red; /* For browsers that do not support gradients */
+    background-image: conic-gradient(var(--par1) 0deg, var(--par1) 180deg, var(--par2) 180deg);
+    border-radius: 50%;
 }
 
-.colour3 {
-    background-color: orange;
+.has-3-colours {
+    background-color: red; /* For browsers that do not support gradients */
+    background-image: conic-gradient(var(--par1) 0deg, var(--par1) 120deg, var(--par2) 120deg, var(--par2) 240deg, var(--par3) 240deg);
+    border-radius: 50%;
 }
 
-.colour4 {
-    background-color: purple;
+.has-4-colours {
+    background-color: red; /* For browsers that do not support gradients */
+    background-image: conic-gradient(var(--par1) 0deg, var(--par1) 90deg, var(--par2) 90deg, var(--par2) 180deg, var(--par3) 180deg, var(--par3) 270deg, var(--par4) 270deg);
+    border-radius: 50%;
 }
 
-.colour5 {
-    background-color: pink;
-}
-
-.colour6 {
-    background-color: white;
+.has-5-colours, .has-6-colours, .has-7-colours, .has-8-colours, .has-9-colours {
+    background-color: red; /* For browsers that do not support gradients */
+    background-image: conic-gradient(red,orange,yellow,green,blue,indigo,violet,red);
+    border-radius: 50%;
 }
 
 .diagonalContainer {
