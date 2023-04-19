@@ -267,6 +267,10 @@ class Cell {
             cell.dropTempClasses();
         }
         this.setValue(option, mode!="manual");
+        for (const cell of allCells) {
+            cell.cleanRemoved();
+            cell.dropTempClasses();
+        }
         if (mode=="create") solveAll();
     }
 
