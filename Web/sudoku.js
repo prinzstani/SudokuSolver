@@ -76,12 +76,20 @@ displayStatus = function (str) {
 updateDiagonals = function() {
     const checkBox = document.getElementById("diagonals");
     addDiagonalsWhenNew = checkBox.checked;
+    console.log("got new diagonals = "+addDiagonalsWhenNew);
+    updateSize();
 }
 
 updateMode = function() {
     const modeDropdown = document.getElementById("mode");
     mode = modeDropdown.options[modeDropdown.selectedIndex].value;
     initsudoku();
+}
+
+updateSize = function() {
+    const sizeDropdown = document.getElementById("size");
+    size = sizeDropdown.options[sizeDropdown.selectedIndex].value;
+    init(size*1,true);
 }
 
 init = function(size = gridSize, newGridType = false) {
@@ -180,10 +188,10 @@ initsudoku = function() {
     const exampleContainer = document.getElementById("examples");
 
     initPuzzle = new URLSearchParams(window.location.search).get('puzzle');
-    if(initPuzzle) {
+    if (initPuzzle) {
         readSudokuString(initPuzzle);
     } else {
-        init(9);
+        updateSize();
     }
 
     exampleContainer.innerHTML="";
@@ -204,14 +212,9 @@ initsudoku = function() {
     document.getElementById("export").addEventListener("click", getSudokuString);
     document.getElementById("diagonals").addEventListener("click", updateDiagonals);
     document.getElementById("mode").addEventListener("change", updateMode);
-    document.getElementById("4x4").setAttribute("onClick", "init(4, true)");
-    document.getElementById("6x6").setAttribute("onClick", "init(6, true)");
-    document.getElementById("9x9").setAttribute("onClick", "init(9, true)");
-    document.getElementById("12x12").setAttribute("onClick", "init(12, true)");
-    document.getElementById("16x16").setAttribute("onClick", "init(16, true)");
+    document.getElementById("size").addEventListener("change", updateSize);
 }
 
-//window.addEventListener("load", initsudoku);
 window.addEventListener("load", updateMode);
 
 class Cell {
